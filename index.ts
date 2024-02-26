@@ -1,6 +1,6 @@
-import { dataSource } from "./src/db";
-import { httpServer } from "./src/http_server";
-import { webSocketServerRun } from "./src/websocket";
+import { dataSource } from './src/db';
+import { httpServer } from './src/http_server';
+import { webSocketServerRun } from './src/websocket';
 
 const HTTP_PORT = 8181;
 

@@ -12,6 +12,10 @@ class GameRoomService {
     return room;
   }
 
+  async findRoomById(roomId: string) {
+    return this.gameRoomRepository.findOne({where: {id: roomId}, relations: {users: true}})
+  }
+
   async addUserToRoom(room: Room, userId: string) {
     if (room.users) {
       room.users.push({ id: userId } as User);
@@ -22,14 +26,17 @@ class GameRoomService {
   }
 
   async getRoomsWithOnePlayer() {
-    const rooms = this.gameRoomRepository.createQueryBuilder('room')
-        .leftJoinAndSelect('room.users', 'user')
-        .groupBy('room.id')
-        .having('COUNT(user.id) = :count', {count:1})
-        .getMany()
-    console.log(rooms)
+    const rooms = await this.gameRoomRepository
+      .createQueryBuilder('room')
+      .leftJoinAndSelect('room.users', 'user')
+      .groupBy('room.id')
+      .having('COUNT(user.id) = :count', { count: 1 })
+      .getMany();
 
-    return rooms
+    return rooms.map((room) => ({
+      roomId: room.id,
+      roomUsers: room.users?.map((u) => ({ index: u.id, name: u.name })) || [],
+    }));
   }
 }
 
